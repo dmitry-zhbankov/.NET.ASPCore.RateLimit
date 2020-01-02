@@ -19,12 +19,26 @@ namespace RateLimit.Controllers
         }
 
         [Route("[action]")]
-        public IActionResult Profiles(string filter, string sort, int? pageSize, int? pageNum)
+        public IActionResult Profiles(string filter, string sortKey, int? pageSize, int? pageNum)
         {
-            profilesService.GetProfiles(
-                (profile) => profile.FirstName.Contains(filter) || profile.LastName.Contains(filter),
-                (profile) => profile.GetType().GetProperty(sort)?.GetType(), pageSize, pageNum);
-            return View();
+            ViewBag.Filter = filter;
+            ViewBag.Sort = sortKey;
+            ViewBag.PageSize = pageSize;
+            ViewBag.PageNum = pageNum;
+
+            pageSize ??= 100;
+            pageNum ??= 0;
+            sortKey ??= "";
+
+            var prop = typeof(Profile).GetProperty(sortKey);
+
+            var profiles = profilesService.GetProfiles(
+                profile => filter == null || profile.FirstName.Contains(filter,StringComparison.InvariantCultureIgnoreCase) || profile.LastName.Contains(filter, StringComparison.InvariantCultureIgnoreCase),
+                profile => prop?.GetValue(profile),
+                (int)pageSize,
+                (int)pageNum);
+            
+            return View(profiles);
         }
     }
 }

@@ -1,8 +1,62 @@
-﻿@model IEnumerable<RateLimit.Profile>
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using RateLimit
+@model IEnumerable<RateLimit.Profile>
 
 @{
     ViewData["Title"] = "Profiles";
 }
 
+@{
+    var parms = new Dictionary<string, string> {
+        {"filter", @ViewBag.Filter},
+        {"pageSize", @ViewBag.PageSize},
+        {"pageNum", @ViewBag.PageNum},
+        {"sortKey" , @ViewBag.Sort}};
+}
+
 <h1>Profiles</h1>
+
+<form method="get" asp-all-route-data="@parms">
+    <input type="text" />
+    <input type="submit"/>
+</form>
+
+<table>
+    <tr>
+        <th>
+            #
+        </th>
+        <th>
+            <a asp-action="Profiles" asp-all-route-data="@parms" asp-route-sortKey="@nameof(Profile.FirstName)">First Name</a>
+        </th>
+        <th>
+            <a asp-action="Profiles" asp-all-route-data="@parms" asp-route-sortKey="@nameof(Profile.LastName)">Last Name</a>
+        </th>
+        <th>
+            <a asp-action="Profiles" asp-all-route-data="@parms" asp-route-sortKey="@nameof(Profile.Birthday)">Birth Date</a>
+        </th>
+    </tr>
+    @{
+        var i = 0;
+        foreach (var profile in Model)
+        {
+            i++;
+            <tr>
+                <td>
+                    @i
+                </td>
+                <td>
+                    @profile.FirstName
+                </td>
+                <td>
+                    @profile.LastName
+                </td>
+                <td>
+                    @profile.Birthday.ToShortDateString()
+                </td>
+            </tr>
+        }
+    }
+
+</table>
 

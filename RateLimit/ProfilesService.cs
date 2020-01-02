@@ -14,20 +14,23 @@ namespace RateLimit
 
         public ProfilesService(string jsonFile)
         {
-            var jsonStr = string.Empty;
+            string jsonStr;
             using (var fileStream = new FileStream("profiles.json", FileMode.Open))
             {
                 var streamReader = new StreamReader(fileStream);
-                streamReader.ReadToEnd();
+                jsonStr=streamReader.ReadToEnd();
             }
             profiles = new List<Profile>(JsonSerializer.Deserialize<IEnumerable<Profile>>(jsonStr));
         }
 
-        public IEnumerable<Profile> GetProfiles<TKey>(Func<Profile, bool> filter, Func<Profile, TKey> sort, int? pageSize, int? pageNum )
+        public IEnumerable<Profile> GetProfiles<TKey>(Func<Profile, bool> filter, Func<Profile, TKey> sort, int pageSize, int pageNum )
         {
-            var ps = pageSize ?? 0;
-            var pn = pageNum ?? 0;
-            return profiles.Where(filter).OrderBy(sort).Skip(ps * pn).Take(ps);
+            var res= profiles.Where(filter)
+                .OrderBy(sort)
+                .Skip(pageSize * pageNum)
+                .Take(pageSize)
+                .ToList();
+            return res;
         }
     }
 }
