@@ -8,18 +8,38 @@
 
 @{
     var parms = new Dictionary<string, string> {
-        {"filter", @ViewBag.Filter},
-        {"pageSize", @ViewBag.PageSize},
-        {"pageNum", @ViewBag.PageNum},
+        {"filter", null},
+        {"pageSize", null},
+        {"pageNum", @ViewBag.PageNum as string},
         {"sortKey" , @ViewBag.Sort}};
 }
 
 <h1>Profiles</h1>
 
-<form method="get" asp-all-route-data="@parms">
-    <input type="text" />
-    <input type="submit"/>
+<form asp-all-route-data="@parms">
+    <input type="text" name="filter" value="@ViewBag.Filter" />
+    <select name="pageSize">
+
+        @{
+            for (int i = 5; i <= 20; i += 5)
+            {
+                if (ViewBag.PageSize == i)
+                {
+                    <option selected="selected">@i</option>
+                    continue;
+                }
+                <option>@i</option>
+            }
+        }
+
+    </select>
+    <input type="submit" value="Apply" />
 </form>
+
+@{
+    parms["filter"] = ViewBag.Filter;
+    parms["pageSize"] = ViewBag.PageSize.ToString();
+}
 
 <table>
     <tr>
@@ -37,13 +57,13 @@
         </th>
     </tr>
     @{
-        var i = 0;
+        int j = 0;
         foreach (var profile in Model)
         {
-            i++;
+            j++;
             <tr>
                 <td>
-                    @i
+                    @j
                 </td>
                 <td>
                     @profile.FirstName
@@ -57,6 +77,29 @@
             </tr>
         }
     }
-
 </table>
 
+@{
+    if (ViewBag.PageNum > 1)
+    {
+        <a asp-all-route-data="@parms" asp-route-pageNum="1">@("<<")</a>
+        <a asp-all-route-data="@parms" asp-route-pageNum="@(ViewBag.PageNum-1)">previous</a>
+    }
+
+    var maxPage = Math.Ceiling((double)ViewBag.Count / ViewBag.PageSize);
+    @for (int i = 1; i <= maxPage; i++)
+    {
+        if (i == ViewBag.PageNum)
+        {
+            <a asp-all-route-data="@parms" asp-route-pageNum="@i"><b>@i</b></a>
+            continue;
+        }
+        <a asp-all-route-data="@parms" asp-route-pageNum="@i">@i</a>
+    }
+
+    if (ViewBag.PageNum < maxPage)
+    {
+        <a asp-all-route-data="@parms" asp-route-pageNum="@(ViewBag.PageNum+1)">next</a>
+        <a asp-all-route-data="@parms" asp-route-pageNum="@maxPage">@(">>")</a>
+    }
+}

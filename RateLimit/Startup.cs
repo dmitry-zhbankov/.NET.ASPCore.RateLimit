@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,7 +29,7 @@ namespace RateLimit
             services.AddControllersWithViews();
             services.AddSingleton(new JsonCreatorService());
             services.AddSingleton(new ProfilesService("profiles.json"));
-            services.AddControllers();
+            services.AddSingleton<RateLimitAttribute>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
