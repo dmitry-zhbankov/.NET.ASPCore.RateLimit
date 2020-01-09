@@ -1,6 +1,8 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using RateLimit
-@model IEnumerable<RateLimit.Profile>
+@using RateLimit.Models
+
+@model IEnumerable<RateLimit.Models.Profile>
 
 @{
     ViewData["Title"] = "Profiles";
@@ -56,8 +58,9 @@
             <a asp-action="Profiles" asp-all-route-data="@parms" asp-route-sortKey="@nameof(Profile.Birthday)">Birth Date</a>
         </th>
     </tr>
+
     @{
-        int j = 0;
+        var j = 0;
         foreach (var profile in Model)
         {
             j++;

@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace RateLimit
+namespace RateLimit.Attributes
 {
     public class RateLimitAttribute : ActionFilterAttribute
     {
-        private int counter;
-        private ILogger _logger;
+        private int _counter;
+        private readonly ILogger _logger;
 
         public int MaxRequests { get; set; }
 
@@ -20,19 +20,19 @@ namespace RateLimit
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            counter++;
-            if (counter > MaxRequests)
+            _counter++;
+            if (_counter > MaxRequests)
             {
-                counter--;
+                _counter--;
                 context.Result = new StatusCodeResult(429);
                 return;
             }
-            _logger.LogCritical(counter.ToString());
+            _logger.LogInformation(_counter.ToString());
         }
 
         public override void OnActionExecuted(ActionExecutedContext context)
         {
-            counter--;
+            _counter--;
         }
     }
 

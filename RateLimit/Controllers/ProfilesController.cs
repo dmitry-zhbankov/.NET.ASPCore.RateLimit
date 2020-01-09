@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
+using RateLimit.Attributes;
+using RateLimit.Models;
+using RateLimit.Services;
 
 namespace RateLimit.Controllers
 {
     public class ProfilesController : Controller
     {
-        ProfilesService _profilesService;
+        private readonly ProfilesService _profilesService;
 
         public ProfilesController(ProfilesService profilesService)
         {
@@ -26,10 +23,8 @@ namespace RateLimit.Controllers
             pageSize ??= 20;
             pageNum ??= 1;
             sortKey ??= "";
-
-            var prop = typeof(Profile).GetProperty(sortKey);
-
             var count = 0;
+            var prop = typeof(Profile).GetProperty(sortKey);
 
             var profiles = await Task.Run(
                 () => _profilesService.GetProfiles(
